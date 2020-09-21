@@ -13,19 +13,26 @@ const bcrypt = require("bcrypt");
 passport.use(
   new Strategy((username, password, done) => {
     db.users.findByUsername({ username: username }, (err, user) => {
+
       if (err) {
         return done(err);
       }
+
       if (!user) {
         return done(null, false);
       }
 
       bcrypt.compare(password, user.password, (err, result) => {
-        if (err) {
-          return done(null, false);
+
+        if (err) throw err;
+
+        if (result) {
+          return done(null, user);
+        } else {
+          return done(null, false)
         }
 
-        return done(null, user);
+        console.log(result)
       });
       //col.findOne() consumes two arguments: an object query and then a callback function
     });
